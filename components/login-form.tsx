@@ -67,13 +67,13 @@ export function LoginForm({
                 </Button>
 
 
-                <FieldDescription className="text-center">
-                  <div className="text-white">Don&apos;t have an account?{" "}
-                    <a href="#" className="underline underline-offset-4 text-[#FFB600] hover:text-gray-200">
+              <FieldDescription className="text-center">
+                <span className="text-white">Don't have an account?{" "}
+                  <a href="/signup" className="underline underline-offset-4 text-[#FFB600] hover:text-gray-200">
                     Sign up
                   </a>
-                  </div>
-                </FieldDescription>
+                </span>
+              </FieldDescription>
               </Field>
             </FieldGroup>
           </form>

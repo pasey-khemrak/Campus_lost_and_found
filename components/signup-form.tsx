@@ -65,7 +65,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <Field>
                 <Button type="submit" className="w-full bg-white text-black hover:bg-gray-200">Create Account</Button>
                 <FieldDescription className="px-6 text-white text-center">
-                  Already have an account? <a href="#" className="text-[#FFB600] hover:text-gray-200">Sign in</a>
+                  Already have an account? <a href="/login" className="text-[#FFB600] hover:text-gray-200">Sign in</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
