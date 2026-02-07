@@ -1,0 +1,170 @@
+.container {
+  min-height: 100vh;
+  background: #ffffff;
+  position: relative;
+}
+
+/* HEADER */
+.header {
+  background: #45aaf2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoWrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #1e90ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title {
+  color: white;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.searchBox {
+  background: white;
+  border-radius: 25px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  width: 320px;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+
+.searchIcon {
+  font-size: 18px;
+}
+
+.icons {
+  color: white;
+  font-size: 22px;
+  display: flex;
+  gap: 16px;
+}
+
+/* MAIN */
+.main {
+  padding: 40px 60px;
+  text-align: center;
+}
+
+.heading {
+  color: #1e90ff;
+  font-size: 36px;
+  margin-bottom: 40px;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.card {
+  background: #45aaf2;
+  color: white;
+  width: 260px;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+
+.card h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.imageBox {
+  background: white;
+  color: black;
+  height: 200px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.dots {
+  position: absolute;
+  bottom: 6px;
+  color: #ccc;
+}
+
+.descTitle {
+  font-size: 14px;
+}
+
+.desc {
+  font-size: 13px;
+}
+
+.seeMore {
+  margin-top: 40px;
+  padding: 10px 40px;
+  border-radius: 20px;
+  border: none;
+  background: #dcdcdc;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* FLOATING BUTTONS */
+.addBtn,
+.helpBtn {
+  position: fixed;
+  bottom: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: none;
+  font-size: 28px;
+  background: #dcdcdc;
+  cursor: pointer;
+}
+
+.addBtn {
+  left: 20px;
+}
+
+.helpBtn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+}

@@ -1,4 +1,4 @@
-import styles from "./device.module.css";
+import styles from "./changepassword.module.css";
 
 export default function Page() {
   return (
@@ -20,19 +20,25 @@ export default function Page() {
         </aside>
 
         <section className={styles.content}>
-          <h2>Device</h2>
+          <h2>Change Password</h2>
 
           <div className={styles.card}>
-            <p><strong>Device:</strong> iPhone 82 Pro Max</p>
-            <p className={styles.location}>Phnom Penh, Cambodia</p>
-            <button className={styles.logoutOne}>
-              🚪 Log out this device
-            </button>
+            <div className={styles.field}>
+              <label>Old Password</label>
+              <input type="password" placeholder="Old Password" />
+            </div>
+            <div className={styles.field}>
+              <label>New Password</label>
+              <input type="password" placeholder="New Password" />
+            </div>
+            <div className={styles.field}>
+              <label>Confirm New Password</label>
+              <input type="password" placeholder="Confirm New Password" />
+            </div>
+            <div className={styles.buttonContainer}>
+              <button className={styles.changeButton}>Change Password</button>
+            </div> 
           </div>
-
-          <button className={styles.logoutAll}>
-            Log out all devices
-          </button>
         </section>
       </main>
 
