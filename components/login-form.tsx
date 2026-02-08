@@ -25,8 +25,8 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div>
-        <h1 className="text-2xl font-bold text-center text-[#0689E9]">Campus Lost and Found</h1>
-        <p className="text-center  text-[#FFB600]">A place to look for your lost belongings</p>
+        <h1 className="text-2xl font-bold text-center text-[#0689E9]" style={{ fontFamily: "Times New Roman, Times, serif" }}>Campus Lost and Found</h1>
+        <p className="text-center  text-[#FFB600] mb-10" style={{ fontFamily: "Times New Roman, Times, serif" }}>A place to look for your lost belongings</p>
       </div>
       <Card className="bg-[#3DADFF] text-white">
         <CardHeader>
@@ -37,11 +37,11 @@ export function LoginForm({
           <form>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="Username">Username</FieldLabel>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
-                  id="username"
-                  type="text"
-                  placeholder="Username"
+                  id="email"
+                  type="email"
+                  placeholder="Email"
                   required
                   className="bg-white text-black"
                 />
@@ -54,7 +54,7 @@ export function LoginForm({
                 </div>
                 <Input id="password" type="password" placeholder="Password" required className="bg-white text-black"/>
                 <a
-                    href="#"
+                    href="/forget_password"
                     className="ml-auto inline-block text-sm text-white underline-offset-4 hover:underline"
                   >
                     Forgot your password?
@@ -65,7 +65,6 @@ export function LoginForm({
                 <Button type="submit" className="w-full bg-white text-black hover:bg-gray-200">
                   Login
                 </Button>
-
 
               <FieldDescription className="text-center">
                 <span className="text-white">Don't have an account?{" "}

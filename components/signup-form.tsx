@@ -18,8 +18,9 @@ import { Checkbox } from "radix-ui"
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-[#0689E9]">Campus Lost and Found</h1>
-      <p className="text-center  text-[#FFB600] mb-10">A place to look for your lost belongings</p>
+        <h1 className="text-2xl font-bold text-center text-[#0689E9]" style={{ fontFamily: "Times New Roman, Times, serif" }}>Campus Lost and Found</h1>
+        <p className="text-center  text-[#FFB600] mb-10" style={{ fontFamily: "Times New Roman, Times, serif" }}>A place to look for your lost belongings</p>
+    
     <Card className="bg-[#3DADFF] text-white" {...props}>
       <CardHeader>
         <CardTitle className="text-center font-bold">Create an account</CardTitle>

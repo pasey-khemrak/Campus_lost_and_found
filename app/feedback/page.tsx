@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./changepassword.module.css";
+import styles from "./feedback.module.css";
 
 export default function Page() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <div className={styles.container}>
-      {/* BLUR CONTENT */}
+      {/* BLUR WRAPPER */}
       <div className={showConfirm ? styles.blur : ""}>
         <header className={styles.navbar}>
           <h1>Campus Lost and Found</h1>
@@ -28,7 +28,7 @@ export default function Page() {
               <a href="/change_password">Change Password</a>
             </div>
 
-            {/* DELETE ACCOUNT */}
+            {/* DELETE ACCOUNT (NO LINK) */}
             <div
               className={styles.sidebarItem}
               onClick={() => setShowConfirm(true)}
@@ -43,29 +43,20 @@ export default function Page() {
           </aside>
 
           <section className={styles.content}>
-            <h2>Change Password</h2>
+            <h2>FeedBack</h2>
 
             <div className={styles.card}>
               <div className={styles.field}>
-                <label>Old Password</label>
-                <input type="password" placeholder="Old Password" />
+                <label>Feedback</label>
+                <textarea
+                  placeholder="Your feedback here..."
+                  rows={5}
+                ></textarea>
               </div>
+            </div>
 
-              <div className={styles.field}>
-                <label>New Password</label>
-                <input type="password" placeholder="New Password" />
-              </div>
-
-              <div className={styles.field}>
-                <label>Confirm New Password</label>
-                <input type="password" placeholder="Confirm New Password" />
-              </div>
-
-              <div className={styles.buttonContainer}>
-                <button className={styles.changeButton}>
-                  Change Password
-                </button>
-              </div>
+            <div className={styles.buttonContainer}>
+              <button className={styles.submitButton}>Submit Feedback</button>
             </div>
           </section>
         </main>

@@ -63,8 +63,8 @@ export default function CategoriesPage() {
         </div>
       </main>
 
-      {/* Help Button */}
-      <div className={styles.help}>?</div>
+
+      <div className={styles.help}><a href="/help">?</a></div>
     </div>
   );
 }

@@ -56,9 +56,8 @@ export default function HomePage() {
         <button className={styles.seeMore}>See more</button>
       </main>
 
-      {/* Floating buttons */}
       <button className={styles.addBtn}>+</button>
-      <button className={styles.helpBtn}>?</button>
+      <div className={styles.help}><a href="/help">?</a></div>
     </div>
   );
 }

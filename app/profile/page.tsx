@@ -45,7 +45,7 @@ export default function ProfilePage() {
       </main>
 
       {/* Help */}
-      <div className={styles.help}>?</div>
+      <div className={styles.help}><a href="/help">?</a></div>
     </div>
   );
 }
