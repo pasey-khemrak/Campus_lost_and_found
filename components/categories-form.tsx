@@ -60,7 +60,6 @@ export default function CampusLostAndFound({ embedded }: CampusLostAndFoundProps
     <section>
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
-        {/* Item Name - Search by similar name */}
         <div style={styles.inputGroup}>
           <label style={styles.label}>Item Name (search for similar)</label>
           <div style={styles.inputWrapper}>
@@ -74,8 +73,6 @@ export default function CampusLostAndFound({ embedded }: CampusLostAndFoundProps
             />
           </div>
         </div>
-
-        {/* Type of Product / Category */}
         <div style={styles.inputGroup}>
           <label style={styles.label}>Category</label>
           <div style={styles.inputWrapper}>

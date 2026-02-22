@@ -4,7 +4,6 @@
   font-family: "Times New Roman", Times, serif;
 }
 
-/* Navbar */
 .navbar {
   height: 70px;
   background: #3DADFF;
@@ -27,7 +26,6 @@
   cursor: pointer;
 }
 
-/* Center container */
 .container {
   min-height: calc(100vh - 70px);
   display: flex;

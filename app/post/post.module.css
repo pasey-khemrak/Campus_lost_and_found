@@ -190,17 +190,35 @@
 }
 
 .dot {
+  display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  margin-right: 6px;
+  border: 1px solid #000;
 }
 
 .lost {
-  background: red;
+  background-color: red;
 }
 
 .found {
-  background: white;
+  background-color: white;
+  border: 1px solid #000;
+}
+
+.returned {
+  background-color: green;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  color: white;
+  margin-bottom: 8px;
 }
 
 .empty {

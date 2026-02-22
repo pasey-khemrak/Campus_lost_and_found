@@ -1,20 +1,154 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { supabase } from "@/app/src/db/lib/supabaseClient";
 import styles from "./changepassword.module.css";
+import homeStyles from "../home/home.module.css";
 
 export default function Page() {
+  const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showNotif, setShowNotif] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        router.replace("/login");
+        return;
+      }
+      setEmail(user.email ?? "");
+    }
+    loadUser();
+  }, [router]);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    if (newPassword !== confirmPassword) {
+      alert("New password and confirm password do not match.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      alert("New password must be at least 6 characters.");
+      return;
+    }
+
+    setIsLoading(true);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: oldPassword,
+    });
+
+    if (signInError) {
+      alert("Current password is incorrect.");
+      setIsLoading(false);
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    setIsLoading(false);
+    if (updateError) {
+      alert(updateError.message);
+      return;
+    }
+
+    alert("Password changed successfully!");
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsLoading(true);
+    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+    if (getUserError || !user) {
+      alert("No user found.");
+      setIsLoading(false);
+      setShowConfirm(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/delete-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error deleting account");
+        setShowConfirm(false);
+        setIsLoading(false);
+        return;
+      }
+
+      alert("Account deleted successfully!");
+      setShowConfirm(false);
+      setIsLoading(false);
+      router.push("/signup");
+    } catch (err) {
+      alert("Server error. Try again.");
+      setShowConfirm(false);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className={styles.container}>
-      {/* BLUR CONTENT */}
       <div className={showConfirm ? styles.blur : ""}>
-        <header className={styles.navbar}>
-          <h1>Campus Lost and Found</h1>
-          <div className={styles.icons}>
-            <span>🔔</span>
-            <span>☰</span>
+        <header className={homeStyles.header}>
+          <div className={homeStyles.left}>
+            <div className={homeStyles.logoWrapper}>
+              <Image
+                src="/logo.png"
+                alt="Campus Logo"
+                width={50}
+                height={50}
+                className={homeStyles.logo}
+              />
+            </div>
+            <span className={homeStyles.title}>Campus Lost and Found</span>
+          </div>
+
+          <div className={homeStyles.icons}>
+            <div className={homeStyles.iconWrapper}>
+              <span onClick={() => setShowNotif(!showNotif)}>🔔</span>
+              {showNotif && (
+                <div className={homeStyles.notificationBox}>
+                  <h4>Notifications</h4>
+                </div>
+              )}
+            </div>
+
+            <div className={homeStyles.iconWrapper}>
+              <span onClick={() => setShowMenu(!showMenu)}>☰</span>
+              {showMenu && (
+                <div className={homeStyles.dropdownMenu}>
+                  <Link href="/profile">Profile</Link>
+                  <Link href="/device">Settings</Link>
+                  <Link href="/post">All Posts</Link>
+                  <Link href="/categories">Categories</Link>
+                  <Link href="/add_post">Add Post</Link>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -28,7 +162,6 @@ export default function Page() {
               <a href="/change_password">Change Password</a>
             </div>
 
-            {/* DELETE ACCOUNT */}
             <div
               className={styles.sidebarItem}
               onClick={() => setShowConfirm(true)}
@@ -45,35 +178,56 @@ export default function Page() {
           <section className={styles.content}>
             <h2>Change Password</h2>
 
-            <div className={styles.card}>
+            <form className={styles.card} onSubmit={handleChangePassword}>
               <div className={styles.field}>
                 <label>Old Password</label>
-                <input type="password" placeholder="Old Password" />
+                <input
+                  type="password"
+                  placeholder="Old Password"
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                  required
+                />
               </div>
 
               <div className={styles.field}>
                 <label>New Password</label>
-                <input type="password" placeholder="New Password" />
+                <input
+                  type="password"
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
               </div>
 
               <div className={styles.field}>
                 <label>Confirm New Password</label>
-                <input type="password" placeholder="Confirm New Password" />
+                <input
+                  type="password"
+                  placeholder="Confirm New Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
               </div>
 
               <div className={styles.buttonContainer}>
-                <button className={styles.changeButton}>
-                  Change Password
+                <button
+                  type="submit"
+                  className={styles.changeButton}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Changing..." : "Change Password"}
                 </button>
               </div>
-            </div>
+            </form>
           </section>
         </main>
 
-        <div className={styles.help}>?</div>
+        <div className={styles.help}><Link href="/help">?</Link></div>
       </div>
 
-      {/* CONFIRMATION MODAL */}
       {showConfirm && (
         <div className={styles.overlay}>
           <div className={styles.modal}>
@@ -90,12 +244,10 @@ export default function Page() {
 
               <button
                 className={styles.confirmBtn}
-                onClick={() => {
-                  alert("Account deleted");
-                  setShowConfirm(false);
-                }}
+                onClick={handleDeleteAccount}
+                disabled={isLoading}
               >
-                Yes
+                {isLoading ? "Deleting..." : "Yes"}
               </button>
             </div>
           </div>

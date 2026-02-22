@@ -2,16 +2,51 @@
 
 import Link from "next/link";
 import styles from "./help.module.css";
-
-
+import homeStyles from "../home/home.module.css";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 export default function HelpPage() {
+  const [showMenu, setShowMenu] = useState(false);
+  const [showNotif, setShowNotif] = useState(false);
+  
   return (
     <div className={styles.container}>
-      <header className={styles.navbar}>
-        <h1>Campus Lost and Found</h1>
-        <div className={styles.icons}>
-          <span>🔔</span>
-          <span>☰</span>
+      <header className={homeStyles.header}>
+        <div className={homeStyles.left}>
+          <div className={homeStyles.logoWrapper}>
+            <Image
+              src="/logo.png"
+              alt="Campus Logo"
+              width={50}
+              height={50}
+              className={homeStyles.logo}
+            />
+          </div>
+          <span className={homeStyles.title}>Campus Lost and Found</span>
+        </div>
+
+        <div className={homeStyles.icons}>
+          <div className={homeStyles.iconWrapper}>
+            <span onClick={() => setShowNotif(!showNotif)}>🔔</span>
+            {showNotif && (
+              <div className={homeStyles.notificationBox}>
+                <h4>Notifications</h4>
+              </div>
+            )}
+          </div>
+
+          <div className={homeStyles.iconWrapper}>
+            <span onClick={() => setShowMenu(!showMenu)}>☰</span>
+            {showMenu && (
+              <div className={homeStyles.dropdownMenu}>
+                <Link href="/profile">Profile</Link>
+                <Link href="/device">Settings</Link>
+                <Link href="/post">All Posts</Link>
+                <Link href="/categories">Categories</Link>
+                <Link href="/add_post">Add Post</Link>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

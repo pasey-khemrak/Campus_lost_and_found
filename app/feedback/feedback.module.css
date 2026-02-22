@@ -74,16 +74,22 @@
 .field label {
   color: black;
 }
-.field input {
+.field input,
+.field textarea {
   padding: 8px 12px;
   border: 1px solid black;
   border-radius: 8px;
   font-size: 14px;
   font-family: sans-serif;
 }
+
+.field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
 .submitButton {
-  background: white;
-  color: black;
+  background: #3dadff;
+  color: white;
   margin: 20px 0px;
   padding: 12px 24px;
   border: none;

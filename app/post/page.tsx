@@ -14,7 +14,7 @@ interface PostUI {
   category: string;
   location: string;
   contact: string;
-  status: "lost" | "found";
+  status: "lost" | "found" | "returned";
   images: string[];
   createdAt: string;
 }
@@ -94,7 +94,7 @@ export default function Page() {
                 .limit(1)
                 .single();
               itemData = data;
-            } else {
+            } else if (post.status === "found") {
               const { data } = await supabase
                 .from("found_items")
                 .select("type_of_product")
@@ -103,9 +103,7 @@ export default function Page() {
                 .single();
               itemData = data;
             }
-          } catch {
-
-          }
+          } catch {}
 
           const itemName = itemData?.type_of_product || post.text || "Item";
 
@@ -124,7 +122,7 @@ export default function Page() {
             category: post.product_category || "",
             location: post.location_of_items || "Unknown location",
             contact: post.contact || "No contact info",
-            status: post.status,
+            status: post.status === "returned" ? "returned" : post.status, // include returned
             images: normalizeImages(post),
             createdAt: post.created_at,
           };
@@ -175,8 +173,20 @@ export default function Page() {
                 <p className={styles.contact}>Contact: {post.contact}</p>
                 <p className={styles.location}>Location: {post.location}</p>
                 <div className={styles.status}>
-                  <span className={`${styles.dot} ${post.status === "lost" ? styles.lost : styles.found}`} />
-                  {post.status === "lost" ? "Lost Item" : "Found Item"}
+                  <span
+                    className={`${styles.dot} ${
+                      post.status === "lost"
+                        ? styles.lost
+                        : post.status === "found"
+                        ? styles.found
+                        : styles.returned
+                    }`}
+                  />
+                  {post.status === "lost"
+                    ? "Lost Item"
+                    : post.status === "found"
+                    ? "Found Item"
+                    : "Returned Item"}
                 </div>
               </div>
             </Link>
