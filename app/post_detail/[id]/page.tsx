@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import styles from "../postdetail.module.css";
 import AppHeader from "@/components/AppHeader";
 
@@ -40,11 +40,16 @@ export default function PostDetailPage() {
 
     async function fetchPost() {
       try {
-        const { data: authData } = await supabase.auth.getUser();
+        if (!isSupabaseAvailable()) {
+          console.error("Supabase is not available");
+          return;
+        }
+
+        const { data: authData } = await supabase!.auth.getUser();
         const user = authData?.user ?? null;
         setCurrentUserId(user?.id ?? null);
 
-        const { data: postData, error } = await supabase
+        const { data: postData, error } = await supabase!
           .from("posts")
           .select("*")
           .eq("id", id)
@@ -58,7 +63,7 @@ export default function PostDetailPage() {
         let userData = null;
 
         if (postData.user_id) {
-          const { data } = await supabase
+          const { data } = await supabase!
             .from("users")
             .select("name, profile, contact")
             .eq("id", postData.user_id)
@@ -105,25 +110,30 @@ export default function PostDetailPage() {
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this post?")) return;
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
       console.log("Deleting post:", post.id);
-      const { error: postError } = await supabase
+      const { error: postError } = await supabase!
         .from("posts")
       .delete()
       .eq("id", post.id);
 
     if (postError) throw postError;
-    const { error: lostError } = await supabase
+    const { error: lostError } = await supabase!
       .from("lost_items")
       .delete()
       .eq("post_id", post.id);
 
     if (lostError) console.error("Lost delete error:", lostError);
 
-    const { error: foundError } = await supabase
+    const { error: foundError } = await supabase!
       .from("found_items")
       .delete()
       .eq("post_id", post.id);

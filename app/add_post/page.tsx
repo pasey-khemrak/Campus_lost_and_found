@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import styles from "./add_post.module.css";
 import AppHeader from "@/components/AppHeader";
@@ -24,7 +24,13 @@ export default function AddPostPage() {
 
   useEffect(() => {
     async function checkUser() {
-      const { data } = await supabase.auth.getUser();
+      if (!isSupabaseAvailable()) {
+        console.error("Supabase is not available");
+        setIsLoading(false);
+        return;
+      }
+      
+      const { data } = await supabase!.auth.getUser();
       if (!data.user) {
         router.push("/login");
       } else {
@@ -52,6 +58,11 @@ export default function AddPostPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return router.push("/login");
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
 
     try {
       const imageUrls: string[] = [];
@@ -62,7 +73,7 @@ export default function AddPostPage() {
         profile: (user.user_metadata?.profile as string) || "",
       };
 
-      const { data: userRow } = await supabase
+      const { data: userRow } = await supabase!
         .from("users")
         .select("name, contact, profile")
         .eq("p_id", user.id)
@@ -79,14 +90,14 @@ export default function AddPostPage() {
       for (const file of images) {
         const fileName = `${user.id}/${Date.now()}-${file.name}`;
 
-        const { error: uploadError } = await supabase.storage.from("post_images").upload(fileName, file);
+        const { error: uploadError } = await supabase!.storage.from("post_images").upload(fileName, file);
 
         if (uploadError) {
           console.error(uploadError);
           return alert("Image upload failed");
         }
 
-        const { data } = supabase.storage.from("post_images").getPublicUrl(fileName);
+        const { data } = supabase!.storage.from("post_images").getPublicUrl(fileName);
         imageUrls.push(data.publicUrl);
       }
 
@@ -125,7 +136,7 @@ export default function AddPostPage() {
       let postError: any = null;
 
       for (const payload of payloadCandidates) {
-        const result = await supabase.from("posts").insert(payload).select().single();
+        const result = await supabase!.from("posts").insert(payload).select().single();
 
         if (!result.error) {
           postData = result.data;
@@ -142,7 +153,7 @@ export default function AddPostPage() {
       }
 
       if (postType === "lost") {
-        await supabase.from("lost_items").insert({
+        await supabase!.from("lost_items").insert({
           post_id: postData.id,
           user_id: user.id,
           type_of_product: title,
@@ -154,7 +165,7 @@ export default function AddPostPage() {
       }
 
       if (postType === "found") {
-        await supabase.from("found_items").insert({
+        await supabase!.from("found_items").insert({
           post_id: postData.id,
           user_id: user.id,
           type_of_product: title,
