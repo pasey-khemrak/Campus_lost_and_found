@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import styles from "./device.module.css";
 import homeStyles from "../home/home.module.css";
 
@@ -103,18 +103,29 @@ export default function Page() {
   }, []);
 
   const handleLogoutThisDevice = async () => {
-    await supabase.auth.signOut();
+    if (isSupabaseAvailable()) {
+      await supabase!.auth.signOut();
+    }
     router.push("/login");
   };
 
   const handleLogoutAllDevices = async () => {
-    await supabase.auth.signOut();
+    if (isSupabaseAvailable()) {
+      await supabase!.auth.signOut();
+    }
     router.push("/login");
   };
 
   const handleDeleteAccount = async () => {
     setIsLoading(true);
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      setIsLoading(false);
+      return;
+    }
+    
+    const { data: { user }, error: getUserError } = await supabase!.auth.getUser();
     if (getUserError || !user) {
       alert("No user found.");
       setIsLoading(false);

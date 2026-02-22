@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -21,7 +21,12 @@ export function ResetPassword({ ...props }: React.ComponentProps<typeof Card>) {
       return;
     }
 
-    const { error } = await supabase.auth.updateUser({
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
+
+    const { error } = await supabase!.auth.updateUser({
       password,
     });
 

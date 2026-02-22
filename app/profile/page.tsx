@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import styles from "./profile.module.css";
 import homeStyles from "../home/home.module.css";
 
@@ -59,12 +59,18 @@ export default function ProfilePage() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (!isSupabaseAvailable()) {
+        console.error("Supabase is not available");
+        setIsLoading(false);
+        return;
+      }
+      
+      const { data: authData, error: authError } = await supabase!.auth.getUser();
 
       if (authError) {
         const msg = authError.message.toLowerCase();
         if (msg.includes("invalid refresh token") || msg.includes("refresh token not found")) {
-          await supabase.auth.signOut();
+          await supabase!.auth.signOut();
           router.replace("/login");
           return;
         }
@@ -84,7 +90,7 @@ export default function ProfilePage() {
       setAuthUserId(currentUser.id);
       setEmail(currentUser.email ?? "");
 
-      const { data: existingProfile, error: fetchError } = await supabase
+      const { data: existingProfile, error: fetchError } = await supabase!
         .from("users")
         .select("name, contact, profile")
         .or(`p_id.eq.${currentUser.id},id.eq.${currentUser.id}`)
@@ -100,7 +106,7 @@ export default function ProfilePage() {
         const defaultName = (currentUser.user_metadata?.name as string) ?? "New User";
         const defaultContact = (currentUser.user_metadata?.contact as string) ?? "";
 
-        const { data: insertedProfile, error: insertError } = await supabase
+        const { data: insertedProfile, error: insertError } = await supabase!
           .from("users")
           .insert({
             p_id: currentUser.id,
@@ -161,12 +167,12 @@ export default function ProfilePage() {
       let uploaded = false;
 
       for (const bucket of bucketCandidates) {
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase!.storage
           .from(bucket)
           .upload(filePath, selectedImage, { upsert: true });
 
         if (!uploadError) {
-          const { data: publicData } = supabase.storage
+          const { data: publicData } = supabase!.storage
             .from(bucket)
             .getPublicUrl(filePath);
           profileImageUrl = publicData.publicUrl;
@@ -190,7 +196,7 @@ export default function ProfilePage() {
       }
     }
 
-    const { error } = await supabase
+    const { error } = await supabase!
       .from("users")
       .update({
         name: getFullName(form.firstName, form.lastName),
@@ -213,7 +219,9 @@ export default function ProfilePage() {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    if (isSupabaseAvailable()) {
+      await supabase!.auth.signOut();
+    }
     router.push("/login");
   };
 

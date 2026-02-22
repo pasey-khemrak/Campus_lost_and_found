@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import styles from "./changepassword.module.css";
 import homeStyles from "../home/home.module.css";
 
@@ -21,7 +21,12 @@ export default function Page() {
 
   useEffect(() => {
     async function loadUser() {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      if (!isSupabaseAvailable()) {
+        console.error("Supabase is not available");
+        return;
+      }
+      
+      const { data: { user }, error } = await supabase!.auth.getUser();
       if (error || !user) {
         router.replace("/login");
         return;
@@ -34,6 +39,11 @@ export default function Page() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       alert("New password and confirm password do not match.");
@@ -46,7 +56,7 @@ export default function Page() {
     }
 
     setIsLoading(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase!.auth.signInWithPassword({
       email,
       password: oldPassword,
     });
@@ -57,7 +67,7 @@ export default function Page() {
       return;
     }
 
-    const { error: updateError } = await supabase.auth.updateUser({
+    const { error: updateError } = await supabase!.auth.updateUser({
       password: newPassword,
     });
 
@@ -75,7 +85,14 @@ export default function Page() {
 
   const handleDeleteAccount = async () => {
     setIsLoading(true);
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      setIsLoading(false);
+      return;
+    }
+    
+    const { data: { user }, error: getUserError } = await supabase!.auth.getUser();
     if (getUserError || !user) {
       alert("No user found.");
       setIsLoading(false);

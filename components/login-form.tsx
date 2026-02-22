@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +26,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase!.auth.signInWithPassword({
       email,
       password,
     });

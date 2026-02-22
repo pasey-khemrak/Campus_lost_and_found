@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/app/src/db/lib/supabaseClient"
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -49,7 +49,15 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }
 
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    if (!isSupabaseAvailable()) {
+      const msg = "Database connection not available"
+      console.log("[Signup]", msg)
+      setMessage(msg)
+      setLoading(false)
+      return
+    }
+
+    const { data: authData, error: authError } = await supabase!.auth.signUp({
       email,
       password,
       options: {

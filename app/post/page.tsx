@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
-import { useEffect, useState } from "react";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "./post.module.css";
 import AppHeader from "@/components/AppHeader";
@@ -19,7 +19,7 @@ interface PostUI {
   createdAt: string;
 }
 
-export default function Page() {
+function PostPageContent() {
   const [posts, setPosts] = useState<PostUI[]>([]);
   const [headerSearch, setHeaderSearch] = useState("");
 
@@ -61,7 +61,13 @@ export default function Page() {
   };
 
   const loadPosts = async () => {
-    let query = supabase.from("posts").select("*").order("created_at", { ascending: false });
+    if (!isSupabaseAvailable()) {
+      console.error("Supabase is not available");
+      setPosts([]);
+      return;
+    }
+    
+    let query = supabase!.from("posts").select("*").order("created_at", { ascending: false });
 
     if (categoryFilter) query = query.eq("product_category", categoryFilter);
     if (statusFilter) query = query.eq("status", statusFilter);
@@ -87,7 +93,7 @@ export default function Page() {
 
           try {
             if (post.status === "lost") {
-              const { data } = await supabase
+              const { data } = await supabase!
                 .from("lost_items")
                 .select("type_of_product")
                 .eq("post_id", post.id)
@@ -95,7 +101,7 @@ export default function Page() {
                 .single();
               itemData = data;
             } else if (post.status === "found") {
-              const { data } = await supabase
+              const { data } = await supabase!
                 .from("found_items")
                 .select("type_of_product")
                 .eq("post_id", post.id)
@@ -216,5 +222,13 @@ export default function Page() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PostPageContent />
+    </Suspense>
   );
 }

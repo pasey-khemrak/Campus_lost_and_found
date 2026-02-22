@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./home/home.module.css";
@@ -59,7 +59,13 @@ export default function Home() {
   };
 
   const loadPosts = async () => {
-    const { data: postData, error } = await supabase
+    if (!isSupabaseAvailable()) {
+      console.error("Supabase is not available");
+      setPosts([]);
+      return;
+    }
+    
+    const { data: postData, error } = await supabase!
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
@@ -84,7 +90,7 @@ export default function Home() {
 
           try {
             if (post.status === "lost") {
-              const { data } = await supabase
+              const { data } = await supabase!
                 .from("lost_items")
                 .select("type_of_product")
                 .eq("post_id", post.id)
@@ -92,7 +98,7 @@ export default function Home() {
                 .single();
               itemData = data;
             } else {
-              const { data } = await supabase
+              const { data } = await supabase!
                 .from("found_items")
                 .select("type_of_product")
                 .eq("post_id", post.id)
@@ -162,7 +168,12 @@ export default function Home() {
   }, [headerSearch]);
 
   const handleAddPostClick = async () => {
-    const { data, error } = await supabase.auth.getUser();
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
+    
+    const { data, error } = await supabase!.auth.getUser();
     if (error || !data.user) {
       router.push("/login?message=Please%20login%20first");
       return;

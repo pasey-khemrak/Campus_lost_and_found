@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/app/src/db/lib/supabaseClient";
+import { supabase, isSupabaseAvailable } from "@/app/src/db/lib/supabaseClient";
 import styles from "./feedback.module.css";
 import homeStyles from "../home/home.module.css";
 
@@ -18,7 +18,12 @@ export default function Page() {
 
   useEffect(() => {
     async function checkAuth() {
-      const { data: { user } } = await supabase.auth.getUser();
+      if (!isSupabaseAvailable()) {
+        console.error("Supabase is not available");
+        return;
+      }
+      
+      const { data: { user } } = await supabase!.auth.getUser();
       if (!user) router.replace("/login");
     }
     checkAuth();
@@ -32,15 +37,20 @@ export default function Page() {
       return;
     }
 
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      return;
+    }
+
     setIsLoading(true);
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase!.auth.getUser();
     if (authError || !user) {
       alert("Please log in to submit feedback.");
       setIsLoading(false);
       return;
     }
 
-    const { error } = await supabase.from("feedback").insert({
+    const { error } = await supabase!.from("feedback").insert({
       user_id: user.id,
       message: trimmed,
     });
@@ -57,7 +67,14 @@ export default function Page() {
 
   const handleDeleteAccount = async () => {
     setIsLoading(true);
-    const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+    
+    if (!isSupabaseAvailable()) {
+      alert("Database connection not available");
+      setIsLoading(false);
+      return;
+    }
+    
+    const { data: { user }, error: getUserError } = await supabase!.auth.getUser();
     if (getUserError || !user) {
       alert("No user found.");
       setIsLoading(false);
