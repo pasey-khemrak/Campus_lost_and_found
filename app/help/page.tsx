@@ -13,16 +13,18 @@ export default function HelpPage() {
     <div className={styles.container}>
       <header className={homeStyles.header}>
         <div className={homeStyles.left}>
-          <div className={homeStyles.logoWrapper}>
-            <Image
-              src="/logo.png"
-              alt="Campus Logo"
-              width={50}
-              height={50}
-              className={homeStyles.logo}
-            />
-          </div>
-          <span className={homeStyles.title}>Campus Lost and Found</span>
+          <Link href="/" className={homeStyles.logoLink}>
+            <div className={homeStyles.logoWrapper}>
+              <Image
+                src="/logo.png"
+                alt="Campus Logo"
+                width={50}
+                height={50}
+                className={homeStyles.logo}
+              />
+            </div>
+            <span className={homeStyles.title}>Campus Lost and Found</span>
+          </Link>
         </div>
 
         <div className={homeStyles.icons}>
@@ -54,7 +56,7 @@ export default function HelpPage() {
         {/* SIDEBAR */}
         <aside className={styles.sidebar}>
           <div className={styles.sidebarItem}>
-            <Link href="/help/page">How to post lost item?</Link>
+            <Link href="/help/page1">How to post lost item?</Link>
           </div>
           <div className={styles.sidebarItem}>
             <Link href="/help/page2">How to post found item?</Link>

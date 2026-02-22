@@ -231,16 +231,18 @@ export default function ProfilePage() {
     <div className={homeStyles.container}>
       <header className={homeStyles.header}>
         <div className={homeStyles.left}>
-          <div className={homeStyles.logoWrapper}>
-            <Image
-              src="/logo.png"
-              alt="Campus Logo"
-              width={50}
-              height={50}
-              className={homeStyles.logo}
-            />
-          </div>
-          <span className={homeStyles.title}>Campus Lost and Found</span>
+          <Link href="/" className={homeStyles.logoLink}>
+            <div className={homeStyles.logoWrapper}>
+              <Image
+                src="/logo.png"
+                alt="Campus Logo"
+                width={50}
+                height={50}
+                className={homeStyles.logo}
+              />
+            </div>
+            <span className={homeStyles.title}>Campus Lost and Found</span>
+          </Link>
         </div>
 
         <div className={homeStyles.icons}>

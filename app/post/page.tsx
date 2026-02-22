@@ -103,7 +103,9 @@ export default function Page() {
                 .single();
               itemData = data;
             }
-          } catch {}
+          } catch (err) {
+            console.log("No item data found for post:", post.id);
+          }
 
           const itemName = itemData?.type_of_product || post.text || "Item";
 
@@ -122,7 +124,7 @@ export default function Page() {
             category: post.product_category || "",
             location: post.location_of_items || "Unknown location",
             contact: post.contact || "No contact info",
-            status: post.status === "returned" ? "returned" : post.status, // include returned
+            status: post.status as "lost" | "found" | "returned", // Ensure proper typing
             images: normalizeImages(post),
             createdAt: post.created_at,
           };
@@ -143,6 +145,26 @@ export default function Page() {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
+  }, [categoryFilter, statusFilter, headerSearch, nameParam]);
+
+  // Listen for post updates and deletions from detail page
+  useEffect(() => {
+    const handlePostUpdate = () => {
+      loadPosts();
+    };
+
+    const handlePostDeleted = () => {
+      loadPosts();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('postUpdated', handlePostUpdate);
+      window.addEventListener('postDeleted', handlePostDeleted);
+      return () => {
+        window.removeEventListener('postUpdated', handlePostUpdate);
+        window.removeEventListener('postDeleted', handlePostDeleted);
+      };
+    }
   }, [categoryFilter, statusFilter, headerSearch, nameParam]);
 
   return (

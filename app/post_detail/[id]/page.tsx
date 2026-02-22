@@ -9,23 +9,20 @@ import AppHeader from "@/components/AppHeader";
 export default function PostDetailPage() {
   const { id } = useParams();
   const [post, setPost] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-  const [editStatus, setEditStatus] = useState<"lost" | "found" | "returned">("lost");
   const [isLoading, setIsLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const normalizeImages = (postData: any): string[] => {
     if (Array.isArray(postData.photo)) return postData.photo.filter(Boolean);
-    if (Array.isArray(postData.photos)) return postData.photos.filter(Boolean);
     if (typeof postData.photo === "string") {
       const trimmed = postData.photo.trim();
       if (!trimmed) return [];
       if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-        const inner = trimmed.slice(1, -1).trim();
-        if (!inner) return [];
-        return inner.split(",").map((v: string) => v.trim().replace(/^"+|"+$/g, "")).filter(Boolean);
+        return trimmed
+          .slice(1, -1)
+          .split(",")
+          .map((v: string) => v.trim().replace(/^"+|"+$/g, ""))
+          .filter(Boolean);
       }
       if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
         try {
@@ -44,64 +41,58 @@ export default function PostDetailPage() {
     async function fetchPost() {
       try {
         const { data: authData } = await supabase.auth.getUser();
-        const currentAuthUser = authData?.user ?? null;
-        setCurrentUserId(currentAuthUser?.id ?? null);
+        const user = authData?.user ?? null;
+        setCurrentUserId(user?.id ?? null);
 
-        let currentUserProfile = null;
-        if (currentAuthUser) {
-          const { data: ownProfile } = await supabase
-            .from("users")
-            .select("name, contact, profile")
-            .eq("id", currentAuthUser.id)
-            .maybeSingle();
-          currentUserProfile = ownProfile ?? null;
+        const { data: postData, error } = await supabase
+          .from("posts")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error || !postData) {
+          console.error("Fetch post error:", error);
+          return;
         }
 
-        const { data: postData } = await supabase.from("posts").select("*").eq("id", id).single();
-        if (!postData) return;
-
         let userData = null;
-        const userIdKey = postData.user_id ?? null;
-        if (userIdKey) {
-          const { data: byId } = await supabase.from("users").select("name, profile, contact").eq("id", userIdKey).maybeSingle();
-          userData = byId ?? null;
+
+        if (postData.user_id) {
+          const { data } = await supabase
+            .from("users")
+            .select("name, profile, contact")
+            .eq("id", postData.user_id)
+            .maybeSingle();
+
+          userData = data;
         }
 
         const images = normalizeImages(postData);
-        const isCurrentUserPost = !!currentAuthUser && String(postData.user_id) === String(currentAuthUser.id);
 
         if (mounted) {
           setPost({
             ...postData,
-            user: userData,
             images,
             imageUrl: images[0] || "/watch.webp",
+            userName:
+              userData?.name || postData.user_name || "Unknown User",
+            userProfile:
+              userData?.profile ||
+              postData.user_profile ||
+              "/default-avatar.png",
             contact:
               postData.contact ||
               userData?.contact ||
-              (isCurrentUserPost ? currentUserProfile?.contact ?? "" : ""),
-            userName:
-              postData.user_name ||
-              postData.name ||
-              userData?.name ||
-              (isCurrentUserPost ? currentUserProfile?.name ?? "" : "Unknown User"),
-            userProfile:
-              postData.user_profile ||
-              postData.profile ||
-              userData?.profile ||
-              (isCurrentUserPost ? currentUserProfile?.profile ?? "/default-avatar.png" : "/default-avatar.png"),
+              "No contact info",
           });
-
-          setEditTitle(postData.title ?? "");
-          setEditDescription(postData.description ?? "");
-          setEditStatus(postData.status ?? "lost");
         }
       } catch (err) {
-        console.error("Failed to fetch post:", err);
+        console.error("Fetch error:", err);
       }
     }
 
     if (id) fetchPost();
+
     return () => {
       mounted = false;
     };
@@ -111,62 +102,44 @@ export default function PostDetailPage() {
 
   const isOwner = currentUserId === post.user_id;
 
-  const handleSave = async () => {
-    if (!editTitle.trim() || !editDescription.trim()) {
-      alert("Title and description cannot be empty.");
-      return;
-    }
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
 
     setIsLoading(true);
 
     try {
-      // 1️⃣ Update posts table
+      console.log("Deleting post:", post.id);
       const { error: postError } = await supabase
         .from("posts")
-        .update({ title: editTitle, description: editDescription, status: editStatus })
-        .eq("id", post.id);
+      .delete()
+      .eq("id", post.id);
 
-      if (postError) throw postError;
+    if (postError) throw postError;
+    const { error: lostError } = await supabase
+      .from("lost_items")
+      .delete()
+      .eq("post_id", post.id);
 
-      // 2️⃣ Update lost_items or found_items table based on original status
-      if (post.status === "lost") {
-        await supabase
-          .from("lost_items")
-          .update({ status: editStatus })
-          .eq("post_id", post.id);
-      } else if (post.status === "found") {
-        await supabase
-          .from("found_items")
-          .update({ status: editStatus })
-          .eq("post_id", post.id);
-      }
+    if (lostError) console.error("Lost delete error:", lostError);
 
-      // 3️⃣ Update local state
-      setPost({ ...post, title: editTitle, description: editDescription, status: editStatus });
-      setIsEditing(false);
-      alert("Post updated successfully!");
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Failed to update post.");
-    }
+    const { error: foundError } = await supabase
+      .from("found_items")
+      .delete()
+      .eq("post_id", post.id);
 
-    setIsLoading(false);
-  };
-
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this post? This cannot be undone.")) return;
-
-    setIsLoading(true);
-    const { error } = await supabase.from("posts").delete().eq("id", post.id);
-    setIsLoading(false);
-    if (error) {
-      alert(error.message);
-      return;
-    }
+    if (foundError) console.error("Found delete error:", foundError);
 
     alert("Post deleted successfully!");
-    window.location.href = "/post"; // redirect to posts list
-  };
+    window.location.href = "/post";
+
+  } catch (err: any) {
+    console.error("Delete failed:", err);
+    alert(err.message || "Delete failed");
+  }
+
+  setIsLoading(false);
+};
 
   return (
     <div className={styles.container}>
@@ -175,98 +148,70 @@ export default function PostDetailPage() {
       <main className={styles.content}>
         <div className={styles.imageSection}>
           <div className={styles.imageWrapper}>
-            <img src={post.imageUrl} className={styles.image} alt={post.title || "Post image"} />
+            <img
+              src={post.imageUrl}
+              className={styles.image}
+              alt="post"
+            />
           </div>
         </div>
 
         <div className={styles.detailSection}>
           <div className={styles.authorCard}>
             <div className={styles.avatar}>
-              <img src={post.userProfile} className={styles.avatarImg} alt={post.userName || "User avatar"} />
+              <img
+                src={post.userProfile}
+                className={styles.avatarImg}
+                alt="avatar"
+              />
             </div>
+
             <span className={styles.authorName}>{post.userName}</span>
+
             {isOwner && (
               <div style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                <button onClick={() => setIsEditing(!isEditing)} style={{ cursor: "pointer" }}>
-                  {isEditing ? "Cancel" : "Edit"}
-                </button>
-                <button onClick={handleDelete} style={{ cursor: "pointer", color: "red" }}>
-                  Delete
+                <button
+                  onClick={handleDelete}
+                  disabled={isLoading}
+                  style={{ cursor: "pointer", color: "red" }}
+                >
+                  {isLoading ? "Deleting..." : "Delete"}
                 </button>
               </div>
             )}
           </div>
 
           <div className={styles.descriptionBox}>
-            {isEditing ? (
-              <>
-                <div>
-                  <label>Title:</label>
-                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} style={{ width: "100%" }} />
-                </div>
-                <div>
-                  <label>Description:</label>
-                  <textarea
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    style={{
-                      width: "100%",
-                      border: "1px solid black",
-                      borderRadius: "10px",
-                      padding: "10px",
-                    }}
-                  />
-                </div>
-                <div>
-                  <label>Status:</label>
-                  <select value={editStatus} onChange={(e) => setEditStatus(e.target.value as any)}>
-                    <option value="lost">Lost</option>
-                    <option value="found">Found</option>
-                    <option value="returned">Returned</option>
-                  </select>
-                </div>
-                <button
-                  onClick={handleSave}
-                  disabled={isLoading}
-                  style={{
-                    marginTop: "8px",
-                    backgroundColor: "#3b82f6",
-                    color: "white",
-                    padding: "8px 16px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </button>
-              </>
-            ) : (
-              <>
-                <h3>{post.title}</h3>
-                <h3>Description:</h3>
-                <p>{post.description}</p>
-                <br />
-                <p>Location: {post.location_of_items || "Unknown"}</p>
-                <p>Category: {post.product_category}</p>
-                <p>Posted on: {new Date(post.created_at).toLocaleDateString()}</p>
-                <p>Contact: {post.contact || "No contact info available"}</p>
-                <p>
-                  Status:{" "}
-                  <span
-                    style={{
-                      color:
-                        post.status === "returned"
-                          ? "green"
-                          : post.status === "lost"
-                          ? "red"
-                          : "black",
-                    }}
-                  >
-                    {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
-                  </span>
-                </p>
-              </>
-            )}
+            <h3>{post.title}</h3>
+
+            <h3>Description:</h3>
+            <p>{post.description}</p>
+
+            <br />
+
+            <p>Location: {post.location_of_items || "Unknown"}</p>
+            <p>Category: {post.product_category}</p>
+            <p>
+              Posted on:{" "}
+              {new Date(post.created_at).toLocaleDateString()}
+            </p>
+            <p>Contact: {post.contact}</p>
+
+            <p>
+              Status:{" "}
+              <span
+                style={{
+                  color:
+                    post.status === "returned"
+                      ? "green"
+                      : post.status === "lost"
+                      ? "red"
+                      : "black",
+                }}
+              >
+                {post.status}
+              </span>
+            </p>
           </div>
         </div>
       </main>

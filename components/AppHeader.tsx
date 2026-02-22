@@ -24,10 +24,12 @@ export default function AppHeader({
   return (
     <header className={styles.header}>
       <div className={styles.left}>
-        <div className={styles.logoWrapper}>
-          <Image src="/logo.png" alt="Campus Logo" width={50} height={50} className={styles.logo} />
-        </div>
-        <span className={styles.title}>Campus Lost and Found</span>
+        <Link href="/" className={styles.logoLink}>
+          <div className={styles.logoWrapper}>
+            <Image src="/logo.png" alt="Campus Logo" width={50} height={50} className={styles.logo} />
+          </div>
+          <span className={styles.title}>Campus Lost and Found</span>
+        </Link>
       </div>
 
       {showSearch && (

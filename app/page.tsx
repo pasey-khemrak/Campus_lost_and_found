@@ -138,6 +138,29 @@ export default function Home() {
     return () => clearTimeout(delayDebounce);
   }, [headerSearch]);
 
+  // Listen for post deletion events to refresh the posts list
+  useEffect(() => {
+    const handlePostDeleted = () => {
+      loadPosts();
+    };
+
+    const handlePostUpdated = () => {
+      loadPosts();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('postDeleted', handlePostDeleted);
+      window.addEventListener('postUpdated', handlePostUpdated);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('postDeleted', handlePostDeleted);
+        window.removeEventListener('postUpdated', handlePostUpdated);
+      }
+    };
+  }, [headerSearch]);
+
   const handleAddPostClick = async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) {
