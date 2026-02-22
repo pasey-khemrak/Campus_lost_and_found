@@ -1,22 +1,26 @@
 .container {
   min-height: 100vh;
-  background: #ffffff;
+  background: #f2f5f8;
   position: relative;
 }
 
-/* HEADER */
 .header {
   background: #45aaf2;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 14px;
   padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 .left {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .logoWrapper {
@@ -28,6 +32,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -40,50 +45,111 @@
   color: white;
   font-size: 20px;
   font-weight: 500;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Times New Roman", Times, serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .searchBox {
   background: white;
-  border-radius: 25px;
-  padding: 6px 12px;
+  border-radius: 24px;
+  padding: 8px 14px;
   display: flex;
   align-items: center;
-  width: 320px;
+  width: min(420px, 100%);
+  flex: 1;
+  max-width: 420px;
 }
 
 .searchBox input {
   border: none;
   outline: none;
-  flex: 1;
-}
-
-.searchIcon {
-  font-size: 18px;
+  width: 100%;
+  font-size: 15px;
 }
 
 .icons {
   color: white;
-  font-size: 22px;
+  font-size: 14px;
   display: flex;
-  gap: 16px;
+  gap: 8px;
 }
 
-/* MAIN */
+.iconWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.iconWrapper span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background: white;
+  width: 190px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  z-index: 100;
+}
+
+.dropdownMenu a {
+  padding: 10px 14px;
+  text-decoration: none;
+  color: #1f2937;
+}
+
+.dropdownMenu a:hover {
+  background: #f2f2f2;
+}
+
+.notificationBox {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background: white;
+  width: 250px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 14px;
+  color: #1f2937;
+}
+
+.notificationItem {
+  padding: 8px;
+  font-size: 14px;
+}
+
 .main {
-  padding: 40px 60px;
+  padding: 34px 22px 100px;
   text-align: center;
 }
 
 .heading {
   color: #1e90ff;
-  font-size: 36px;
-  margin-bottom: 40px;
+  font-size: clamp(30px, 3.8vw, 52px);
+  margin-bottom: 30px;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .cards {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 40px;
 }
 
@@ -96,63 +162,93 @@
   text-align: left;
 }
 
-.card h3 {
+.cardTitle {
   text-align: center;
+  font-size: 15px;
+  font-weight: 700;
   margin-bottom: 10px;
 }
 
-.imageBox {
-  background: white;
-  color: black;
+.image {
+  width: 100%;
   height: 200px;
-  border-radius: 4px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 200px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  margin-bottom: 12px;
+  color: #6b7280;
 }
 
-.dots {
-  position: absolute;
-  bottom: 6px;
-  color: #ccc;
+.titleText {
+  margin: 0 0 8px;
+  font-size: 18px;
 }
 
-.descTitle {
+.contact {
+  margin: 0 0 8px;
   font-size: 14px;
 }
 
-.desc {
-  font-size: 13px;
+.location {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.lost {
+  background: #ef4444;
+}
+
+.found {
+  background: #22c55e;
 }
 
 .seeMore {
-  margin-top: 40px;
-  padding: 10px 40px;
-  border-radius: 20px;
+  margin-top: 30px;
+  padding: 10px 34px;
+  border-radius: 999px;
   border: none;
   background: #dcdcdc;
   font-size: 16px;
   cursor: pointer;
 }
 
-/* FLOATING BUTTONS */
-.addBtn,
-.helpBtn {
+.addBtn {
   position: fixed;
-  bottom: 20px;
-  width: 55px;
-  height: 55px;
+  bottom: 22px;
+  left: 22px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   border: none;
-  font-size: 28px;
+  font-size: 30px;
   background: #dcdcdc;
   cursor: pointer;
-}
-
-.addBtn {
-  left: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
 }
 
 .help {
@@ -168,4 +264,27 @@
   justify-content: center;
   font-size: 22px;
   cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
+}
+
+.help a {
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .left {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .searchBox {
+    max-width: 100%;
+    order: 3;
+  }
 }

@@ -1,28 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { supabase } from "@/app/src/db/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+export function ForgetPassword({ ...props }: React.ComponentProps<typeof Card>) {
   const [email, setEmail] = useState("");
-  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
-    router.push("/otp_code");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset_password`,
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Password reset email sent! Please check your inbox.");
+    }
   };
 
   return (
@@ -53,7 +52,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-
                 <Input
                   id="email"
                   type="email"

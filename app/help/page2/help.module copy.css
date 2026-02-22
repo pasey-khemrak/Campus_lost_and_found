@@ -1,0 +1,158 @@
+.container {
+  min-height: 100vh;
+  background: white;
+  font-family: Arial, sans-serif;
+}
+
+.navbar {
+  height: 64px;
+  background: #3dadff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 25px;
+}
+
+.icons span {
+  margin-left: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.main {
+  display: flex;
+  padding: 32px 40px;
+  gap: 40px;
+}
+
+.sidebar {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebarItem {
+  background: #e5e7eb;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  color: #4b5563;
+}
+
+.content {
+  flex: 1;
+  background: #3dadff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+}
+
+.content h2 {
+  color: white;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 32px;
+  width: 80%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: black;
+}
+.field label {
+  color: black;
+}
+.field input {
+  padding: 8px 12px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: sans-serif;
+}
+.submitButton {
+  background: white;
+  color: black;
+  margin: 20px 0px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+}
+
+.help {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.blur {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  width: 360px;
+  padding: 32px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-bottom: 12px;
+}
+
+.modal p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cancelBtn,
+.confirmBtn {
+  background: #3dadff;
+  color: white;
+  border: none;
+  padding: 6px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+}

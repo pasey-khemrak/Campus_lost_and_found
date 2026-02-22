@@ -72,7 +72,7 @@ export const lostItems = pgTable(
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
-export type Post = typeof posts.$inferSelect;
+export type Post = typeof posts.$inferSelect; 
 export type NewPost = typeof posts.$inferInsert;
 
 export type LostItem = typeof lostItems.$inferSelect;

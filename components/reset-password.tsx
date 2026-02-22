@@ -2,27 +2,35 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/app/src/db/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const [email, setEmail] = useState("");
+export function ResetPassword({ ...props }: React.ComponentProps<typeof Card>) {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
-    router.push("/login");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Password changed successfully!");
+      router.push("/login");
+    }
   };
 
   return (
@@ -44,22 +52,41 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       <Card className="bg-[#3DADFF] text-white" {...props}>
         <CardHeader>
           <CardTitle className="text-center font-bold m-0">
-            Forget Password
+            Reset Password
           </CardTitle>
         </CardHeader>
 
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="new-password">New Password</FieldLabel>
-              <Input id="new-password" placeholder="New Password" type="password" required className="bg-white text-black"/>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="confirm-password" className="bg-[#3DADFF] text-white">
-                Confirm Password
-              </FieldLabel>
-              <Input id="confirm-password" type="password" placeholder="Confirm Password" required className="bg-white text-black mb-10"/>
+              <Field>
+                <FieldLabel htmlFor="new-password">
+                  New Password
+                </FieldLabel>
+                <Input
+                  id="new-password"
+                  placeholder="New Password"
+                  type="password"
+                  required
+                  className="bg-white text-black"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="confirm-password">
+                  Confirm Password
+                </FieldLabel>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="Confirm Password"
+                  required
+                  className="bg-white text-black mb-10"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
 
                 <Button
                   type="submit"

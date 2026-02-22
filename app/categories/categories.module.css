@@ -119,3 +119,167 @@
   width: 16px;
   height: 16px;
 }
+/* Navbar / Header */
+.navbar {
+  height: 70px;
+  background: #3DADFF;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Left side of header */
+.navbar .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Logo wrapper */
+.navbar .logoWrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo text */
+.navbar .logo {
+  font-size: 25px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Right side icons */
+.navbar .icons {
+  display: flex;
+  gap: 20px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.navbar .dropdownMenu {
+  position: absolute;
+  top: 70px;
+  right: 40px;
+  background: white;
+  color: black;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.navbar .dropdownMenu a {
+  padding: 8px 20px;
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+
+.navbar .dropdownMenu a:hover {
+  background: #3DADFF;
+  color: white;
+  border-radius: 6px;
+}
+/* HEADER */
+.header {
+  background: #45aaf2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoWrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #1e90ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title {
+  color: white;
+  font-size: 20px;
+  font-weight: 500;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.searchBox {
+  background: white;
+  border-radius: 25px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  width: 320px;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+
+.searchIcon {
+  font-size: 18px;
+}
+
+.icons {
+  color: white;
+  font-size: 22px;
+  display: flex;
+  gap: 16px;
+}
+
+.iconWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+/* DROPDOWN */
+.dropdownMenu {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background: white;
+  width: 180px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: none; /* default hidden */
+  flex-direction: column;
+  padding: 10px 0;
+  z-index: 100;
+}
+
+.iconWrapper:hover .dropdownMenu {
+  display: flex; /* show menu on hover */
+}
+
+.dropdownMenu a {
+  padding: 10px 16px;
+  text-decoration: none;
+  color: black;
+}
+
+.dropdownMenu a:hover {
+  background: #f2f2f2;
+}
