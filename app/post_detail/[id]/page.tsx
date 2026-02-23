@@ -12,6 +12,9 @@ export default function PostDetailPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const normalizeImages = (postData: any): string[] => {
     if (Array.isArray(postData.photo)) return postData.photo.filter(Boolean);
     if (typeof postData.photo === "string") {
@@ -107,49 +110,45 @@ export default function PostDetailPage() {
 
   const isOwner = currentUserId === post.user_id;
 
+  const nextImage = () => {
+    setCurrentIndex((prev) =>
+      prev < post.images.length - 1 ? prev + 1 : prev
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));
+  };
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this post?")) return;
-    
+  
     if (!isSupabaseAvailable()) {
       alert("Database connection not available");
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
-      console.log("Deleting post:", post.id);
-      const { error: postError } = await supabase!
+      console.log("Deleting post (CASCADE):", post.id);
+      const { error } = await supabase!
         .from("posts")
-      .delete()
-      .eq("id", post.id);
-
-    if (postError) throw postError;
-    const { error: lostError } = await supabase!
-      .from("lost_items")
-      .delete()
-      .eq("post_id", post.id);
-
-    if (lostError) console.error("Lost delete error:", lostError);
-
-    const { error: foundError } = await supabase!
-      .from("found_items")
-      .delete()
-      .eq("post_id", post.id);
-
-    if (foundError) console.error("Found delete error:", foundError);
-
-    alert("Post deleted successfully!");
-    window.location.href = "/post";
-
-  } catch (err: any) {
-    console.error("Delete failed:", err);
-    alert(err.message || "Delete failed");
-  }
-
-  setIsLoading(false);
-};
+        .delete()
+        .eq("id", post.id);
+  
+      if (error) throw error;
+  
+      alert("Post deleted successfully!");
+      window.location.href = "/post";
+  
+    } catch (err: any) {
+      console.error("Delete failed:", err);
+      alert(err.message || "Delete failed");
+    }
+  
+    setIsLoading(false);
+  };
 
   return (
     <div className={styles.container}>
@@ -157,12 +156,46 @@ export default function PostDetailPage() {
 
       <main className={styles.content}>
         <div className={styles.imageSection}>
-          <div className={styles.imageWrapper}>
+          <div className={styles.imageWrapper} style={{ position: "relative" }}>
+            
+            {post.images.length > 1 && (
+              <button
+                onClick={prevImage}
+                style={{
+                  position: "absolute",
+                  left: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  zIndex: 2,
+                  cursor: "pointer",
+                }}
+              >
+                ◀
+              </button>
+            )}
+
             <img
-              src={post.imageUrl}
+              src={post.images[currentIndex]}
               className={styles.image}
               alt="post"
             />
+
+            {/* RIGHT BUTTON */}
+            {post.images.length > 1 && (
+              <button
+                onClick={nextImage}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  zIndex: 2,
+                  cursor: "pointer",
+                }}
+              >
+                ▶
+              </button>
+            )}
           </div>
         </div>
 
